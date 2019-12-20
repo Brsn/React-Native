@@ -1,53 +1,62 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import ColorCounter from './components/ColorCounter';
 
-const ColorSquare = () => {
-    const [red, setRed] = useState(0);
-    const [blue, setBlue] = useState(0);
-    const [green, setGreen] = useState(0);
-
-    const setColor = (color, change) => {
-        switch (color) {
-            case 'red':
-                red + change > 255 || red + change < 0 ? null : setRed(red + change);
-                return;
-            case 'green':
-                green + change > 255 || green + change < 0 ? null : setGreen(green + change);
-                return;
-            case 'blue':
-                blue + change > 255 || blue + change < 0 ? null : setBlue(blue + change);
-                return;
-        }
-    };
-
-
-    return (
-        <ScrollView style={styles.scrollView}>
-            <View>
-                <ColorCounter onIncrease={() => setColor('red', 1)}
-                    onDecrease={() => setColor('red', -1)}
-                    color="1px More Red" />
-                <ColorCounter onIncrease={() => setColor('red', 10)}
-                    onDecrease={() => setColor('red', -10)}
-                    color="10px More Red" />
-                <ColorCounter onIncrease={() => setColor('blue', 1)}
-                    onDecrease={() => setColor('blue', - 1)}
-                    color="1px More Blue" />
-                <ColorCounter onIncrease={() => setColor('blue', 10)}
-                    onDecrease={() => setColor('blue', - 10)}
-                    color="10px More Blue" />
-                <ColorCounter onIncrease={() => setColor('green', 1)}
-                    onDecrease={() => setColor('green' - 1)}
-                    color="1px More Green" />
-                <ColorCounter onIncrease={() => setColor('green', 10)}
-                    onDecrease={() => setColor('green' - 10)}
-                    color="10px More Green" />
-                <View style={{ height: 150, width: 150, backgroundColor: `rgb(${red}, ${green}, ${blue})` }} />
-            </View>
-        </ScrollView>
-    )
+const reducer = (state, action) => {
+    //state === { red: number, green: number, blue: number};
+    //action === { type: 'change_red', || 'change_blue', || 'change_green', payload: 10)
 }
+const ColorSquare = () => {
+
+    switch (action.type) {
+        case 'red':
+            if (state.red + action.payload > 255 || state.red + action.payload < 0) {
+                return state;
+            }
+            return { ...state, red: state.red + action.payload };
+        //updates the state object without changing it
+        case 'green':
+            if (state.green + action.payload > 255 || state.green + action.payload < 0) {
+                return state;
+            }
+            return { ...state, green: state.green + action.payload };
+        case 'blue':
+            if (state.blue + action.payload > 255 || state.blue + action.payload < 0) {
+                return state;
+            }
+            return { ...state, blue: state.blue + action.payload };
+        default:
+            return state;
+
+
+    }
+
+};
+const [state, dispatch] = useReducer(reducer, { red: 0, green: 0, blue: 0 });
+const { red, green, blue } = state;
+//here were destructoring
+//we could instead use state.red, ect...
+
+
+
+
+return (
+    <ScrollView style={styles.scrollView}>
+        <View>
+            <ColorCounter onIncrease={() => dispatch({ colorToChange: 'red', payload: 10 })}
+                onDecrease={() => dispatch({ colorToChange: 'red', payload: -10 })}
+                color="Red" />
+            <ColorCounter onIncrease={() => dispatch({ colorToChange: 'blue', payload: 10 })}
+                onDecrease={() => dispatch({ colorToChange: 'blue', payload: -10 })}
+                color="Blue" />
+            <ColorCounter onIncrease={() => dispatch({ colorToChange: 'green', payload: 10 })}
+                onDecrease={() => dispatch({ colorToChange: 'green', payload: -10 })}
+                color="Green" />
+            <View style={{ height: 150, width: 150, backgroundColor: `rgb(${red}, ${green}, ${blue})` }} />
+        </View>
+    </ScrollView>
+)
+
 
 const styles = StyleSheet.create({});
 
